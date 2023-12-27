@@ -1,2 +1,2 @@
 # unibo
-Notes and useful things from the computer science engeneering course at unibo
+Notes and useful things for the computer science engeneering course at Unibo.
