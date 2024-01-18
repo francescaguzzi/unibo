@@ -1,0 +1,35 @@
+Risoluzione testo iptables prova 11/06/21
+
+-----------------------------------------
+
+iptables -F INPUT
+iptables -F OUTPUT
+iptables -F FORWARD
+
+### Consentire tutto il traffico sull'interfaccia di loopback
+
+iptables -I INPUT -i lo -j ACCEPT
+iptables -I OUTPUT -o lo -j ACCEPT
+
+### Consentire il traffico delle connessioni http entranti
+
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+### Consentire connessioni SSH uscenti verso la rete host-only 192.168.56.0/24
+
+iptables -A INPUT -p tcp -s 192.168.56.0/24 --sport 22 -m state --state ESTABLISHED -j ACCEPT
+
+### Bloccare l'inoltro del traffico proveniente dalla rete host-only verso altre destinazioni
+
+iptables -A FORWARD -p tcp -s 192.168.56.0/24 ! -d 192.168.56.0/24 -j DROP
+
+### Consentire la risoluzione dei nomi DNS
+
+iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+iptables -A INPUT -p udp --sport 53 -j ACCEPT
+
+### Bloccare tutto il traffico in entrata 
+## policy di default
+
+iptables -P INPUT -j DROP
+

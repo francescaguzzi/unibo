@@ -1,0 +1,26 @@
+Prova d'esame di Sicurezza Informatica 27/06/23 - Francesca Guzzi (0000969922)
+ 
+# Fase 1:
+La strategia ideale per identificare le modifiche avvenute è utilizzare l'integrity checker AIDE.
+ 
+1. Modifico la configurazione di aide per eseguire il controllo su /usr/bin ed /etc.
+2. Inizializzo il database pulito con il comando aide -c /home/kali/aide/aide.conf -i
+3. Copio il database con cp /home/kali/aide/aide.db{.new,}
+4. Eseguo sudo ./change3
+5. Eseguo il controllo con il comando aide -c /home/kali/aide/aide.conf -C
+
+Possiamo notare quindi che sono stati modificati i file cp e tee, oltre che /etc/shadow, /etc/passwd ed /etc/sudoers. 
+Osservando aide osservo che ai due file /etc/passwd ed /etc/shadow è stato aggiunto qualcosa (segno >) ed infatti lanciando cat /etc/passwd noto la nuova riga: 
+"toor:x:10000:1:New Person In Town:/tmp:/bin/bash"
+
+
+# Fase 2: 
+
+Lanciando su toor e in seguito id noto che il gid=1(daemon) e groups=1(daemon), quindi non siamo root. 
+Essendo però /etc/sudoers ora writable, posso lanciare da dentro toor il comando 
+
+echo "toor ALL=(ALL:ALL) ALL" | tee -a /etc/sudoers
+
+(nello screenshot prima per provare se effettivamente potessi scriverci ho lanciato solo echo "toor" e per questo da il warning)
+
+dopodichè lanciando id sono ancora daemon, ma lanciando il comando sudo cat /etc/shadow posso leggere il file, e quindi ho ottenuto i privilegi di root. 

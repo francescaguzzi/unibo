@@ -1,0 +1,21 @@
+Prova d'esame di Sicurezza Informatica 27/06/23 - Francesca Guzzi (0000969922)
+
+Osservando il tracciato di traffico tramite wireshark è possibile osservare che:
+
+1. Nel tracciato sono presenti a livello di trasporto i protocolli TCP ed UDP, mentre a livello applicativo ritroviamo SSDP e ICMP.
+
+2. Gli indirizzi coinvolti sono 192.168.56.1 e 192.168.56.12, e osservando il campo "Len" dei pacchetti si può notare che quando è maggiore di 0 (contiene dei dati) è sempre il primo indirizzo a mandarli verso il secondo, quindi il flusso di dati segue il verso 192.168.56.1 -> 192.168.56.12 
+
+3. La prima parte della flag si trova nello stream TCP iniziale, mentre la seconda parte si trova nello stream UDP. 
+
+# Regole 
+
+Scrivo quindi due regole seguendo le osservazioni fatte in precedenza, quindi lo stream degli indirizzi ip trovati e specifico nella regola tcp (flow: to_server,established) per far si che la regola faccia match con il payload dei pacchetti e mi consenta di visualizzarlo. Dal momento che il primo indirizzo è quello che inizia la connessione, la direzione to_server dovrebbe essere giusta. 
+Nella regola udp, invece, essendo un protocollo stateless devo specificare nella regola (content:"SEC") per fare match con il contenuto dei pacchetti. 
+
+
+alert tcp 192.168.56.1 any -> 192.168.56.12 any (msg:"Flag found in TCP stream"; flow:to_server,established; sid:9000001; rev:1;)
+
+alert udp 192.168.56.1 any -> 192.168.56.12 any (msg:"Flag found in UDP stream"; content:"SEC"; sid:9000002; rev:1;)
+
+Eseguendo cat fast.log noto che sono stati rilevati tutti i pacchetti interessanti, quindi procedo con il parsing.

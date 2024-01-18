@@ -1,0 +1,9 @@
+Prova d'esame di Sicurezza Informatica 27/06/23 - Francesca Guzzi (0000969922)
+
+Per vedere tutti i payload, per prima cosa lancio: 
+cat eve.json | jq 'select(.event_type="alert")' | jq -r '.payload_printable'
+
+Mettendo in pipe anche grep "SEC", trovo la prima parte e la seconda parte della flag: per stampare in output solo quelle senza tutte le altre aggiungo quindi in pipe anche grep "PARTE", quindi il comando finale che ho utilizzato per il parsing è:
+
+cat eve.json | jq 'select(.event_type="alert")' | jq -r '.payload_printable' | grep "SEC" | grep "PARTE"
+

@@ -1,0 +1,98 @@
+## Esercizio a caso su iptables fatto da chatgpt
+
+1)  Consentire solo il traffico SSH (porta 22) entrante dall'indirizzo IP specifico 192.168.1.100
+2)  Consentire il traffico HTTP (porta 80) e HTTPS (porta 443) in uscita verso qualsiasi destinazione
+3)  Bloccare tutto il traffico ICMP in entrata e in uscita
+4)  Consentire il traffico DNS (porta 53) in uscita verso il server DNS 8.8.8.8
+5)  Consentire il traffico FTP (porta 20 e 21) in entrata e in uscita
+6)  Bloccare tutto il resto del traffico in entrata e in uscita
+
+## Soluzione:
+
+# 1 
+iptables -A INPUT -p tcp -d 192.168.1.100 --dport 22 -m state --state ESTABLISHED -j ACCEPT
+
+# 2
+iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+
+# 3
+iptables -A INPUT -p icmp -j DROP
+iptables -A OUTPUT -p icmp -j DROP
+
+# 4
+iptables -A OUTPUT -p udp -d 8.8.8.8 --dport 53 -j ACCEPT
+iptables -A OUTPUT -p tcp -d 8.8.8.8 --dport 53 -j ACCEPT
+
+# 5
+iptables -A INPUT -p tcp --dport 20:21 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 20:21 -j ACCEPT
+
+# 6
+iptables -P INPUT -j DROP
+iptables -P OUTPUT -j DROP
+
+--------
+
+## Altro esercizio fatto da chatgpt
+
+1) Consenti il traffico in ingresso sulla porta 22 (SSH) solo per l'indirizzo IP 192.168.1.100.
+2) Blocca tutto il traffico in ingresso proveniente dalla sottorete 10.0.0.0/24.
+3) Consenti il traffico in uscita verso le porte 80 (HTTP) e 443 (HTTPS).
+4) Consenti il traffico in ingresso sulla porta 8080 solo per l'indirizzo IP 192.168.1.200.
+5) Blocca tutto il traffico in uscita verso l'indirizzo IP 203.0.113.10.
+6) Consenti il traffico in ingresso sulla porta 53 (DNS) solo per l'indirizzo IP 192.168.1.50.
+7) Consenti il traffico in ingresso sulla porta 123 (NTP) solo per l'indirizzo IP 192.168.1.150.
+8) Consenti tutto il traffico in uscita.
+
+## Soluzione: 
+
+# 1
+iptables -A INPUT -p tcp --s 192.168.1.100 --dport 22 -j ACCEPT
+
+# 2
+iptables -A INPUT -p tcp -s 10.0.0.0/24 -j DROP
+
+# 3
+iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+
+# 4
+iptables -A INPUT -p tcp --dport 8080 -s 192.168.1.200 -j ACCEPT
+
+# 5
+iptables -A OUTPUT -p tcp -d 203.0.113.10 -j DROP
+
+# 6
+iptables -A INPUT -p udp --dport 53 -s 192.168.1.50 -j ACCEPT
+
+# 7
+iptables -A INPUT -p udp --dport 123 -s 192.168.1.150 -j ACCEPT
+
+# 8
+iptables -P OUTPUT -j ACCEPT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
